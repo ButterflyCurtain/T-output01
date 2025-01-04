@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>シンプルテキストツール</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+            background-color: #36393f;
+            color: #dcddde;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #40444b;
+            color: #dcddde;
+            border: 1px solid #202225;
+            border-radius: 4px;
+            font-size: 16px;
+            resize: vertical;
+        }
+        select {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            background-color: #40444b;
+            color: #dcddde;
+            border: 1px solid #202225;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #5865f2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px 0;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #4752c4;
+        }
+        #preview {
+            background-color: #40444b;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            min-height: 100px;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+<h1>シンプルテキストツール</h1>
+
+<textarea id="input" placeholder="テキストを入力してください..."></textarea>
+
+<div class="controls">
+    <select id="user-select">
+        <option value="0">-- 発言者を選択 --</option>
+    </select>
+
+    <select id="feel-select">
+        <option value="0">-- 感情を選択 --</option>
+    </select>
+
+    <select id="action-select">
+        <option value="0">-- 動作を選択 --</option>
+    </select>
+
+    <select id="ending-select">
+        <option value="0">-- 末尾を選択 --</option>
+    </select>
+</div>
+
+<div class="buttons">
+    <button id="preview-btn">プレビュー</button>
+    <button id="share-btn">共有URL生成</button>
+</div>
+
+<div id="preview"></div>
+
+<script src="simple-text-processor.js"></script>
+<script>
+    const processor = new SimpleTextProcessor();
+    let expressionsData = null;
+
+    // 初期化
+    async function init() {
+        expressionsData = await processor.loadExpressions();
+        // 発言者、感情、動作、末尾データを非同期でロードして expressionsData に格納
+
+        populateSelects();
+        setupEventListeners();
+    }
+
+    // セレクトボックスの設定
+    function populateSelects() {
+        const selects = {
+            'user-select': expressionsData.users,
+            'feel-select': expressionsData.feels,
+            'action-select': expressionsData.actions,
+            'ending-select': expressionsData.endings
+        };
+
+        Object.entries(selects).forEach(([id, options]) => {
+            const select = document.getElementById(id);
+            select.innerHTML = ''; // 既存のオプションをクリア
+
+            // オプションを追加
+            Object.entries(options).forEach(([value, text]) => {
+                if (text !== 'none-date') {
+                    const option = new Option(text === '未設定' ?
+                        `-- ${id.split('-')[0]}を選択 --` : text, value);
+                    select.add(option);
+                }
+            });
+        });
+    }
+
+    // イベントリスナーの設定
+    function setupEventListeners() {
+        const input = document.getElementById('input');
+        const previewBtn = document.getElementById('preview-btn');
+        const shareBtn = document.getElementById('share-btn');
+        const controls = document.querySelectorAll('select');
+
+        previewBtn.addEventListener('click', updatePreview);
+        shareBtn.addEventListener('click', generateShareURL);
+        input.addEventListener('input', updatePreview);
+
+        controls.forEach(control => {
+            control.addEventListener('change', updatePreview);
+        });
+    }
+
+    // プレビューの更新
+    function updatePreview() {
+        const input = document.getElementById('input');
+        const metadata = processor.createMetadata(
+            document.getElementById('user-select').value,
+            document.getElementById('feel-select').value,
+            document.getElementById('action-select').value,
+            document.getElementById('ending-select').value
+        );
+
+        const preview = document.getElementById('preview');
+        preview.textContent = processor.formatPreview(input.value, metadata);
+    }
+
+    // 入力内容と選択内容から共有URLを生成し、クリップボードにコピー
+    async function generateShareURL() {
+        const input = document.getElementById('input');
+        const text = input.value;
+
+        if (!text.trim()) {
+            alert('テキストを入力してください。');
+            return;
+        }
+
+        const metadata = processor.createMetadata(
+            document.getElementById('user-select').value,
+            document.getElementById('feel-select').value,
+            document.getElementById('action-select').value,
+            document.getElementById('ending-select').value
+        );
+
+        const baseUrl = window.location.href.substring(
+            0,
+            window.location.href.lastIndexOf('/') + 1
+        );
+
+        const url = processor.createShareableURL(text, metadata, baseUrl);
+
+        try {
+            await navigator.clipboard.writeText(url);
+            alert('共有URLをクリップボードにコピーしました！');
+        } catch (err) {
+            console.error('URLのコピーに失敗しました:', err);
+            alert('URLのコピーに失敗しました。');
+        }
+    }
+
+    // 初期化実行
+    init();
+</script>
+</body>
+</html>
