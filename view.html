@@ -1,217 +1,83 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>テキストビューワー</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 800px;
-      margin: 20px auto;
-      padding: 0 20px;
-      background-color: #36393f;
-      color: #dcddde;
-      line-height: 1.5;
-    }
-
-    .content {
-      background-color: #40444b;
-      padding: 20px;
-      border-radius: 8px;
-      margin-top: 20px;
-    }
-
-    /* ChatTool-style markdown */
-    .spoiler {
-      background-color: #202225;
-      color: transparent;
-      padding: 0 4px;
-      border-radius: 3px;
-      cursor: pointer;
-    }
-
-    .spoiler:hover {
-      color: #dcddde;
-    }
-
-    code {
-      background-color: #2f3136;
-      padding: 2px 4px;
-      border-radius: 3px;
-      font-family: 'Consolas', monospace;
-    }
-
-    pre {
-      background-color: #2f3136;
-      padding: 16px;
-      border-radius: 4px;
-      overflow-x: auto;
-    }
-
-    pre code {
-      background-color: transparent;
-      padding: 0;
-    }
-
-    .italic {
-      font-style: italic;
-    }
-
-    .bold {
-      font-weight: bold;
-    }
-
-    .underline {
-      text-decoration: underline;
-    }
-
-    .strikethrough {
-      text-decoration: line-through;
-    }
-
-    blockquote {
-      border-left: 4px solid #4f545c;
-      margin: 8px 0;
-      padding: 0 8px;
-      color: #b9bbbe;
-    }
-
-    ul {
-      list-style-type: none;
-      padding-left: 20px;
-    }
-
-    ul li::before {
-      content: "• ";
-      color: #dcddde;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>テキストビューワー</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+            background-color: #36393f;
+            color: #dcddde;
+        }
+        .content {
+            background-color: #40444b;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            font-size: 16px;
+        }
+        .footer {
+            margin-top: 20px;
+            padding: 10px;
+            border-top: 1px solid #4f545c;
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
 <div id="content" class="content"></div>
+<div id="footer" class="footer"></div>
+
+<script src="simple-text-processor.js"></script>
 <script>
-  class TextCompressor {
-    constructor() {
-      this.PATTERN_MARKER = '†';
-      this.REPEAT_MARKER = '‡';
+    const processor = new SimpleTextProcessor();
+
+    async function init() {
+        try {
+            await processor.loadExpressions();
+
+            const hash = window.location.hash;
+            if (!hash) {
+                showError('URLパラメータが見つかりません。');
+                return;
+            }
+
+            const data = processor.parseShareableURL(hash);
+            if (!data) {
+                showError('無効なURLです。');
+                return;
+            }
+
+            displayContent(data.text, data.metadata);
+        } catch (error) {
+            showError(error.message);
+        }
     }
 
-    decompress(compressedText) {
+    function displayContent(text, metadata) {
+        const content = document.getElementById('content');
+        const footer = document.getElementById('footer');
 
-        //   if (!compressedText) return '';
-        //   let decompressed = compressedText;
-        //
-        //   try {
-        //     // パターン展開
-        //     const patternRegex = new RegExp(`${this.PATTERN_MARKER}(\d+)(.)`, 'g');
-        //     decompressed = decompressed.replace(patternRegex,
-        //             (_, length, char) => char.repeat(parseInt(length)));
-        //
-        //     // 繰り返し文字展開
-        //     const repeatRegex = new RegExp(`${this.REPEAT_MARKER}(\d+)(.)`, 'g');
-        //     decompressed = decompressed.replace(repeatRegex,
-        //             (_, count, char) => char.repeat(parseInt(count)));
-        //
-        //   } catch (error) {
-        //     console.warn('Decompression failed:', error);
-        //     return compressedText;
-        //   }
-        //
-        //   return decompressed;
-        // }
-      // }
+        // 改行を保持
+        content.textContent = text;
 
-      //     or __（上は圧縮アルゴ関連。...頑張ろうとして変な出力になっちゃった...）
-
-      if (!compressedText) return '';
-      let decompressed = decodeURIComponent(compressedText); // URLデコード
-      try {
-        const patternRegex = new RegExp(`${this.PATTERN_MARKER}(\d+)(.)`, 'g');
-        decompressed = decompressed.replace(patternRegex, (_, length, char) => char.repeat(parseInt(length)));
-
-        const repeatRegex = new RegExp(`${this.REPEAT_MARKER}(\d+)(.)`, 'g');
-        decompressed = decompressed.replace(repeatRegex, (_, count, char) => char.repeat(parseInt(count)));
-        console.log('Received text:', compressedText);
-        console.log('Decompressed text:', decompressed);
-      } catch (error) {
-        console.warn('Decompression failed:', error);
-        return compressedText;
-      }
-      return decompressed;
-    }
-  }
-
-
-  class ChatToolMarkdownParser {
-    parse(text) {
-      // コードブロック
-      text = text.replace(/```([^`]*?)```/g, (_, code) =>
-              `<pre><code>${this.escapeHtml(code.trim())}</code></pre>`);
-
-      // インラインコード
-      text = text.replace(/`([^`]+)`/g, (_, code) =>
-              `<code>${this.escapeHtml(code)}</code>`);
-
-      // スポイラー
-      text = text.replace(/\|\|(.*?)\|\|/g, '<span class="spoiler">$1</span>');
-
-      // 太字
-      text = text.replace(/\*\*(.*?)\*\*/g, '<span class="bold">$1</span>');
-
-      // イタリック
-      text = text.replace(/\*(.*?)\*/g, '<span class="italic">$1</span>');
-
-      // 下線
-      text = text.replace(/__(.*?)__/g, '<span class="underline">$1</span>');
-
-      // 取り消し線
-      text = text.replace(/~~(.*?)~~/g, '<span class="strikethrough">$1</span>');
-
-      // 引用
-      text = text.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
-
-      // リスト
-      text = text.replace(/^- (.+)$/gm, '<li>$1</li>');
-      if (text.includes('<li>')) {
-        text = '<ul>' + text + '</ul>';
-      }
-
-      // 改行
-      text = text.replace(/\n/g, '<br>');
-
-      return text;
+        // フッター部分の表示
+        const previewText = processor.formatPreview(text, metadata);
+        const footerText = previewText.split('\n\n')[1] || previewText;
+        footer.textContent = footerText;
     }
 
-    escapeHtml(text) {
-      return text
-              .replace(/&/g, "&amp;")
-              .replace(/</g, "&lt;")
-              .replace(/>/g, "&gt;")
-              .replace(/"/g, "&quot;")
-              .replace(/'/g, "&#039;");
-    }
-  }
-
-  window.onload = function() {
-    const compressor = new TextCompressor();
-    const parser = new ChatToolMarkdownParser();
-
-
-// ハッシュからデコード済みのHTMLを取得する関数
-    function getDecompressedHtmlFromHash(hash) {
-      const urlParams = new URLSearchParams(hash.slice(1));
-      if (urlParams.has('t')) {
-        const encodedText = urlParams.get('t');
-        return parser.parse(compressor.decompress(encodedText));
-      }
-      return 'URLパラメータが見つかりません。テキストを表示するには、proper URLパラメータが必要です。';
+    function showError(message) {
+        const content = document.getElementById('content');
+        content.textContent = `エラー: ${message}`;
     }
 
-// メインロジック
-    const contentElement = document.getElementById('content');
-    contentElement.innerHTML = getDecompressedHtmlFromHash(window.location.hash);
-  };
+    init();
 </script>
 </body>
 </html>
