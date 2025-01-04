@@ -63,14 +63,13 @@
         const content = document.getElementById('content');
         const footer = document.getElementById('footer');
 
-        // 改行を保持
-        content.textContent = text;
+        content.textContent = text.trim();
 
-        // フッター部分の表示
-        const previewText = processor.formatPreview(text, metadata);
-        const footerText = previewText.split('\n\n')[1] || previewText;
+        const footerText = `${metadata.user}${metadata.feel}${metadata.action}${metadata.ending}`;
         footer.textContent = footerText;
     }
+
+
 
     function showError(message) {
         const content = document.getElementById('content');
