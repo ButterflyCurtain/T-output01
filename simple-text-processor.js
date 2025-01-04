@@ -3,7 +3,7 @@ class SimpleTextProcessor {
         this.expressionsData = null;
     }
 
-    // Base64のURLのエンコード
+    // Base64のURL安全バージョンのエンコード
     encodeBase64URL(str) {
         return btoa(unescape(encodeURIComponent(str)))
             .replace(/\+/g, '-')
@@ -11,7 +11,7 @@ class SimpleTextProcessor {
             .replace(/=+$/, '');
     }
 
-    // Base64のURLのデコード
+    // Base64のURL安全バージョンのデコード
     decodeBase64URL(str) {
         str = str.replace(/-/g, '+').replace(/_/g, '/');
         while (str.length % 4) {
@@ -37,7 +37,7 @@ class SimpleTextProcessor {
     // テキストとメタデータを組み合わせて共有用URLを生成
     createShareableURL(text, metadata, baseUrl) {
         const encodedText = this.encodeBase64URL(text);
-        const metaString = `${metadata.user}${metadata.feel}${metadata.action}${metadata.ending}`;
+        const metaString = `${metadata.user}|${metadata.feel}|${metadata.action}|${metadata.ending}`;
         return `${baseUrl}view.html#t=${encodedText}&m=${metaString}`;
     }
 
@@ -52,15 +52,17 @@ class SimpleTextProcessor {
 
             if (!encodedText) return null;
 
+            const metadataParts = metadata.split('|');
             return {
                 text: this.decodeBase64URL(encodedText),
                 metadata: {
-                    user: metadata[0] || '0',
-                    feel: metadata[1] || '0',
-                    action: metadata[2] || '0',
-                    ending: metadata[3] || '0'
+                    user: this.expressionsData.users[metadataParts[0]] || '未設定',
+                    feel: this.expressionsData.feels[metadataParts[1]] || '未設定',
+                    action: this.expressionsData.actions[metadataParts[2]] || '未設定',
+                    ending: this.expressionsData.endings[metadataParts[3]] || '未設定'
                 }
             };
+
         } catch (error) {
             console.error('URLの解析に失敗:', error);
             throw new Error('URLの解析に失敗しました');
