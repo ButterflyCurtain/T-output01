@@ -3,7 +3,7 @@ class SimpleTextProcessor {
         this.expressionsData = null;
     }
 
-    // Base64のURL安全バージョンのエンコード
+    // Base64のURLのエンコード
     encodeBase64URL(str) {
         return btoa(unescape(encodeURIComponent(str)))
             .replace(/\+/g, '-')
@@ -11,7 +11,7 @@ class SimpleTextProcessor {
             .replace(/=+$/, '');
     }
 
-    // Base64のURL安全バージョンのデコード
+    // Base64のURLのデコード
     decodeBase64URL(str) {
         str = str.replace(/-/g, '+').replace(/_/g, '/');
         while (str.length % 4) {
