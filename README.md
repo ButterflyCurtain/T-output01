@@ -3,8 +3,9 @@
 // ...こういうのは、どんな些細なものでも明記しておくべきだって教えてもらったことあるから...
 // 内容としては、リンクからテキストを出力するための最低限のHTMLファイルです。ただそれだけ。
 
-// This is the first repository I created as a hobbyist study.There seems to be no content...What the heck. (((((
-// License...Probably no one will ever see it or need it, but... I've unlicensed it, in case you're wondering.
-// ...I've been taught that these things should be clearly stated, no matter how trivial they are...
-// The content is a minimal HTML file to output text from a link.Just that.
+// This is a repository I made for the first time as a hobby project and to learn.  
+// There's basically nothing here... just kidding ((((  
+// As for the license... I don't think anyone will see this or need it, but just in case, I've set it to "Unlicense."  
+// ...I once heard that even for trivial stuff like this, it's better to explicitly state it.  
+// The content is just a minimal HTML file for outputting text from a link. That's all there is to it.
 
