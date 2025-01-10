@@ -120,10 +120,10 @@ class SimpleTextProcessor {
         } catch (error) {
             console.error('式データの読み込みに失敗:', error);
             return {
-                users: { '0': '' },
-                feels: { '0': '' },
-                actions: { '0': '' },
-                endings: { '0': '', '1': '。' }
+                users: { '0': ' ' },
+                feels: { '0': ' ' },
+                actions: { '0': ' ' },
+                endings: { '0': ' ', '1': '。' }
             };
         }
     }
