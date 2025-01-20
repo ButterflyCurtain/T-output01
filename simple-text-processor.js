@@ -56,10 +56,10 @@ class SimpleTextProcessor {
             return {
                 text: this.decodeBase64URL(encodedText),
                 metadata: {
-                    user: this.expressionsData.users[metadataParts[0]] || '未設定',
-                    feel: this.expressionsData.feels[metadataParts[1]] || '未設定',
-                    action: this.expressionsData.actions[metadataParts[2]] || '未設定',
-                    ending: this.expressionsData.endings[metadataParts[3]] || '未設定'
+                    user: this.expressionsData.users[metadataParts[0]] || '',
+                    feel: this.expressionsData.feels[metadataParts[1]] || '',
+                    action: this.expressionsData.actions[metadataParts[2]] || '',
+                    ending: this.expressionsData.endings[metadataParts[3]] || ''
                 }
             };
 
