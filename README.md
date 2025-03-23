@@ -5,7 +5,7 @@
 マークダウン形式のリッチテキスト書式とDiscord風の表示をサポートする軽量テキスト変換・共有ツールです。テキスト情報を内包したURLを生成し、書式設定されたテキストを他者と共有できます。
 
 ## 機能
-* **リッチテキスト書式**: **太字**、*斜体*、> 引用、||ネタバレ防止|| などをサポート
+* **リッチテキスト書式**: **太字**、*斜体*、> 引用、||ネタバレ防止|| など
 * **テキストエンコードオプション**:
   * URLエンコード（短縮URL用）
   * Base64エンコード（互換性確保用）
@@ -15,8 +15,8 @@
 * **簡単な共有**:
   * テキスト共有用のURLを生成
   * 受信者はインストール不要で閲覧可能
-~~* **プレビュー機能**:~~
-  ~~* 共有前にテキストを確認~~
+* **プレビュー機能**:
+  * 共有前にテキストを確認
 
 ## ディレクトリ構造
 
@@ -29,23 +29,6 @@ T-output01/
 ├── UNLICENSE               # ライセンス（パブリックドメイン）
 └── README.md               # 本ドキュメント
 ```
-
-## インストール
-リポジトリのクローン
-
-```bash
-git clone https://github.com/ButterflyCurtain/T-output01.git
-```
-
-## ローカルセットアップ
-依存関係は不要 - ブラウザ上で完全に動作します。
-1. ローカルサーバーを起動、例えば:
-
-```bash
-python -m http.server
-```
-
-2. ブラウザで`index.html`を開く
 
 ## 使用方法
 1. テキスト入力と処理（index.html）
@@ -67,18 +50,10 @@ python -m http.server
 2. 共有テキストの閲覧（view.html）
    生成されたURL（例: `view.html#b=<エンコードされたテキスト>`）を開き、Discord風の書式設定されたテキストを表示。
 
-## 技術詳細
-* **処理ロジック**: テキスト書式設定とエンコードは`simple-text-processor.js`で管理
-* **URL形式**: `#<エンコード>=<テキスト>&m=<メタデータ>`というシンプル構造
-* **デザイン**: Discord風のダークテーマを採用
-
-## 注意
-* ローカルサーバーの使用を推奨（直接ファイルを開くと一部環境で動作しない場合あり）
-* データはURL内に含まれ、サーバー側には何も保存されません
-* 長いテキストの場合、一部ブラウザのURL長制限にご注意ください（まぁ流石に大丈夫だと思うけど）
 
 ## ライセンス
-Unlicenseの下で公開されており、本プロジェクトはパブリックドメインです。制限なく自由に使用、修正、配布が許可されています 。
+Unlicenseの下で公開されており、本プロジェクトはパブリックドメインです。
+制限なく自由に使用、修正、配布が許可されています 。
 
 
 ---
@@ -115,25 +90,6 @@ simple-text-processor/
 └── README.md               # This document
 ```
 
-## Installation
-
-### Clone the Repository
-
-```bash
-git clone https://github.com/ButterflyCurtain/T-output01.git
-```
-*Note: Replace `<your-username>` with your actual GitHub username*
-
-### Local Setup
-
-No dependencies required - runs entirely in the browser.
-
-1. Start a local server, for example:
-   ```bash
-   python -m http.server
-   ```
-2. Open `index.html` in your browser
-
 ## Usage
 
 ### 1. Text Input and Processing (index.html)
@@ -156,18 +112,6 @@ No dependencies required - runs entirely in the browser.
 ### 2. Viewing Shared Text (view.html)
 
 Open the generated URL (e.g., `view.html#b=<encoded-text>`) to see the Discord-styled formatted text.
-
-## Technical Details
-
-- **Processing Logic**: Text formatting and encoding managed in `simple-text-processor.js`
-- **URL Format**: Simple structure using `#<encoding>=<text>&m=<metadata>`
-- **Design**: Adopts a Discord-inspired dark theme
-
-## Notes
-
-- A local server is recommended (direct file opening may not work in some cases)
-- Data is contained in the URL - nothing is stored server-side
-- For long texts, be aware of URL length limitations in some browsers (though, in modern browsers, this is rarely an issue).
 
 ## License
 
