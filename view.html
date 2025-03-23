@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>テキストビューワー</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -27,9 +28,69 @@
             border-top: 1px solid #4f545c;
             font-style: italic;
         }
+        .title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #4f545c;
+        }
+        .error {
+            color: #f04747;
+            padding: 10px;
+            background-color: #40444b;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        /* Disc*rd formatting styles */
+        .spoiler {
+            background-color: #202225;
+            /*color: transparent;*/
+            padding: 0 2px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .spoiler:hover, .spoiler.revealed {
+            background-color: rgba(32, 34, 37, 0.4);
+            color: #dcddde;
+        }
+        .code-inline {
+            background-color: #2f3136;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .code-block {
+            background-color: #2f3136;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            display: block;
+            margin: 5px 0;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        .quote {
+            border-left: 4px solid #4f545c;
+            padding-left: 8px;
+            color: #a0a0a0;
+            margin: 5px 0;
+        }
+        /* ボールド∧イタリック*/
+        strong {
+            font-weight: bold !important; /* 他のスタイルに上書きされないように（!important、要らないかも） */
+        }
+        em {
+            font-style: italic;
+        }
+        #preview .spoiler:hover {
+            background-color: rgba(32, 34, 37, 0.4);
+            color: #dcddde;
+        }
     </style>
 </head>
 <body>
+<div id="title" class="title" style="display: none;"></div>
 <div id="content" class="content"></div>
 <div id="footer" class="footer"></div>
 
@@ -53,23 +114,72 @@
                 return;
             }
 
-            displayContent(data.text, data.metadata);
+            displayContent(data.text, data.metadata, data.title);
         } catch (error) {
             showError(error.message);
         }
     }
 
-    function displayContent(text, metadata) {
+    function formatDiscordStyle(text) {
+        // スポイラー: ||text|| -> <span class="spoiler">text</span>
+        text = text.replace(/\|\|(.*?)\|\|/g, '<span class="spoiler">$1</span>');
+
+        // コードブロック: ```\ncode\n``` -> <pre class="code-block">code</pre>
+        text = text.replace(/```([\s\S]*?)```/g, '<pre class="code-block">$1</pre>');
+
+        // インラインコード: `code` -> <code class="code-inline">code</code>
+        text = text.replace(/`([^`]+)`/g, '<code class="code-inline">$1</code>');
+
+        // 引用: > text -> <div class="quote">text</div>
+        // 行の先頭が > で始まる場合のみ
+        const lines = text.split('\n');
+        for (let i = 0; i < lines.length; i++) {
+            if (lines[i].trim().startsWith('>')) {
+                lines[i] = '<div class="quote">' + lines[i].trim().substring(1).trim() + '</div>';
+            }
+        }
+        text = lines.join('\n');
+
+        // 太字: **text** -> <strong>text</strong>
+        text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+        // イタリック: *text* -> <em>text</em>
+        text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+        return text;
+    }
+
+    function displayContent(text, metadata, title) {
         const content = document.getElementById('content');
         const footer = document.getElementById('footer');
+        const titleElement = document.getElementById('title');
 
-        content.textContent = text.trim();
+        // タイトルの表示/非表示
+        if (title && title.trim()) {
+            titleElement.textContent = title;
+            titleElement.style.display = 'block';
+        } else {
+            titleElement.style.display = 'none';
+        }
+
+        // Discord風リッチテキストフォーマットを適用
+        content.innerHTML = formatDiscordStyle(text.trim());
 
         const footerText = `${metadata.user}${metadata.feel}${metadata.action}${metadata.ending}`;
         footer.textContent = footerText;
+
+        // スポイラーのクリックイベント
+        document.querySelectorAll('.spoiler').forEach(spoiler => {
+            spoiler.addEventListener('click', function() {
+                this.classList.toggle('revealed');
+                if (this.classList.contains('revealed')) {
+                    this.style.color = '#dcddde';
+                } else {
+                    this.style.color = 'transparent';
+                }
+            });
+        });
     }
-
-
 
     function showError(message) {
         const content = document.getElementById('content');
