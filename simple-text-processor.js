@@ -61,66 +61,6 @@ class SimpleTextProcessor {
         }
     }
 
-    // URL解析時にテキストを処理
-    // parseShareableURL(hash) {
-    //     if (!hash) return null;
-    //
-    //     try {
-    //         // ブラウザがエンコードしている可能性を考慮し、事前にデコードを試みる
-    //         const decodedHash = decodeURIComponent(hash);
-    //         const parts = decodedHash.slice(1).split('&');
-    //         let textPart = '';
-    //         let titlePart = '';
-    //         let metadataPart = '';
-    //         let isBase64 = false;
-    //         let hasMarkup = false;
-    //
-    //         for (const part of parts) {
-    //             if (part.startsWith('b=')) {
-    //                 textPart = this.decodeBase64URL(part.substring(2));
-    //                 isBase64 = true;
-    //             } else if (part.startsWith('u=')) {
-    //                 textPart = this.decodeURLSafe(part.substring(2));
-    //             } else if (part.startsWith('t=')) {
-    //                 titlePart = isBase64 ?
-    //                     this.decodeBase64URL(part.substring(2)) :
-    //                     this.decodeURLSafe(part.substring(2));
-    //             } else if (part.startsWith('m=')) {
-    //                 metadataPart = part.substring(2);
-    //             } else if (part === 'm1') {
-    //                 hasMarkup = true;
-    //             }
-    //         }
-    //
-    //         if (!textPart) return null;
-    //
-    //         // マークアップ記号が置換されている場合は元に戻す
-    //         if (hasMarkup) {
-    //             textPart = this.unescapeMarkupSymbols(textPart);
-    //             if (titlePart) titlePart = this.unescapeMarkupSymbols(titlePart);
-    //         }
-    //
-    //         const metadataParts = metadataPart.split('|');
-    //         return {
-    //             text: textPart,
-    //             title: titlePart || '',
-    //             metadata: {
-    //                 user: this.expressionsData && metadataParts[0] ?
-    //                     (this.expressionsData.users[metadataParts[0]] || '') : '',
-    //                 feel: this.expressionsData && metadataParts[1] ?
-    //                     (this.expressionsData.feels[metadataParts[1]] || '') : '',
-    //                 action: this.expressionsData && metadataParts[2] ?
-    //                     (this.expressionsData.actions[metadataParts[2]] || '') : '',
-    //                 ending: this.expressionsData && metadataParts[3] ?
-    //                     (this.expressionsData.endings[metadataParts[3]] || '') : ''
-    //             }
-    //         };
-    //     } catch (error) {
-    //         console.error('URLの解析に失敗:', error);
-    //         throw new Error('URLの解析に失敗しました');
-    //     }
-    // }
-
     // Base64エンコーディング（従来のメソッド、互換性のために残す）
     encodeBase64URL(str) {
         return btoa(unescape(encodeURIComponent(str)))
