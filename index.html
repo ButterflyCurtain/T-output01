@@ -215,7 +215,7 @@
 </div>
 
 <div class="buttons">
-<!--     <button id="preview-btn">プレビュー</button> -->
+    <button id="preview-btn">プレビュー</button>
     <button id="share-btn">共有URL生成</button>
 </div>
 
@@ -298,8 +298,8 @@
     }
 
     function handleKeyboardShortcuts(e) {
-        if (!e.ctrlKey) return;
-        e.preventDefault();
+        if (!e.ctrlKey) return; // Ctrlキーじゃなかったら何もしない
+
         const formatMap = {
             'b': 'bold',
             'i': 'italic',
@@ -307,8 +307,13 @@
             'k': e.shiftKey ? 'codeblock' : 'code',
             'q': 'quote'
         };
+
         const format = formatMap[e.key.toLowerCase()];
-        if (format) applyFormat(format);
+
+        if (format) {
+            e.preventDefault(); // フォーマット処理がある場合だけデフォルト動作を止める
+            applyFormat(format);
+        }
     }
 
     function applyFormat(format) {
