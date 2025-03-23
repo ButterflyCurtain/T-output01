@@ -16,7 +16,7 @@
   * テキスト共有用のURLを生成
   * 受信者はインストール不要で閲覧可能
 * **プレビュー機能**:
-  * 共有前にDiscord風デザインでテキストを確認
+  * 共有前にテキストを確認
 
 ## ディレクトリ構造
 
@@ -102,7 +102,7 @@ A lightweight text transformation and sharing tool that supports Markdown-style 
   - Generate URLs to share your formatted text
   - Recipients can view your text without needing to install anything
 - **Preview Functionality**:
-  - See your text in a Discord-inspired design before sharing
+  - See your text before sharing
 
 ## Directory Structure
 
