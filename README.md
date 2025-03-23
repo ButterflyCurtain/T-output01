@@ -72,14 +72,13 @@ python -m http.server
 * **URL形式**: `#<エンコード>=<テキスト>&m=<メタデータ>`というシンプル構造
 * **デザイン**: Discord風のダークテーマを採用
 
-## 重要事項
+## 注意
 * ローカルサーバーの使用を推奨（直接ファイルを開くと一部環境で動作しない場合あり）
 * データはURL内に含まれ、サーバー側には何も保存されません
 * 長いテキストの場合、一部ブラウザのURL長制限にご注意ください（まぁ流石に大丈夫だと思うけど）
 
 ## ライセンス
 Unlicenseの下で公開されており、本プロジェクトはパブリックドメインです。制限なく自由に使用、修正、配布が許可されています 。
-
 
 
 ---
@@ -164,7 +163,7 @@ Open the generated URL (e.g., `view.html#b=<encoded-text>`) to see the Discord-s
 - **URL Format**: Simple structure using `#<encoding>=<text>&m=<metadata>`
 - **Design**: Adopts a Discord-inspired dark theme
 
-## Important Notes
+## Notes
 
 - A local server is recommended (direct file opening may not work in some cases)
 - Data is contained in the URL - nothing is stored server-side
